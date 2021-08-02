@@ -7,7 +7,7 @@ const {sin, cos, floor, abs, PI} = Math;
 let obj = loadObj(knight, 1);
 console.log(obj.elements.f);
 let obj_v = obj.vertices.v;
-let obj_i = obj.elements.f.vlist;
+let obj_i = obj.elements.f.v;
 obj_v = g.mult_rows(obj.vertices.v, [.088,.088,.088,1]);
 
 var tri_v = [[-0.75, 0.5, 0, 1],

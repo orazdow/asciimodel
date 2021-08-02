@@ -2,7 +2,11 @@ function loadObj(str, w){
 
     let obj = {
         vertices: {v:[], vt:[], vn:[]},
-        elements: {p:[], l:[], f:[]}
+        elements: {
+            p:{v:[], vt:[], vn:[]},
+            l:{v:[], vt:[], vn:[]}, 
+            f:{v:[], vt:[], vn:[]}
+        }
     };
 
     let a = str.split('\n');
@@ -28,37 +32,31 @@ function loadObj(str, w){
             case 'f':
             case 'l':
             case 'p':
-                let f = {v:[], vt:[], vn: []};
+                let f = obj.elements[c];
+                let v = [], vt = [], vn = [];
                 for(let e of arr){
                     let el = e.split('/').filter(el=> el!='');
                     switch(el.length){
                         case 1:
-                            f.v.push(+el[0]);
+                            v.push(+el[0]-1);
                         break;
                         case 2:
-                            f.v.push(+el[0]);
-                            f.vn.push(+el[1]);
+                            v.push(+el[0]-1);
+                            vn.push(+el[1]-1);
                         break;
                         case 3:
-                            f.v.push(+el[0]);
-                            f.vt.push(+el[1]);
-                            f.vn.push(+el[2]);
+                            v.push(+el[0]-1);
+                            vt.push(+el[1]-1);
+                            vn.push(+el[2]-1);
                         break;
                     }
                 }
-                obj.elements[c].push(f);
+                if(v.length) f.v.push(v);
+                if(vt.length) f.vt.push(vt);
+                if(vn.length) f.vn.push(vn);
         }
     }
-
-    for(let k in obj.elements){
-        let e = obj.elements[k];
-        let vlist = [];
-        for(let l of e){
-            if(l.v) vlist.push(l.v.map(n=>n-1));
-        }
-        if(vlist.length) e.vlist = vlist;
-    }
-
+    
     return obj;
 } 
 
