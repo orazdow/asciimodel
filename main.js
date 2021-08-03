@@ -1,5 +1,5 @@
 import {tetrahedron, octahedron, hexahedron, icosahedron, dodecahedron, knight, bunny} from './model.js';
-import {loadObj} from './loader.js';
+import {loadObj, edgeList} from './loader.js';
 import * as g from './render.js';
 const {sin, cos, floor, abs, PI} = Math;
 
@@ -8,6 +8,8 @@ console.log(obj.elements.f);
 let obj_v = obj.vertices.v;
 let obj_i = obj.elements.f.v;
 obj_v = g.mult_rows(obj.vertices.v, [.088,.088,.088,1]);
+
+obj_i = edgeList(obj_i);
 
 let tri_v = [[-0.75, 0.5, 0, 1],
             [0.75, 0.5, 0, 1],

@@ -60,4 +60,24 @@ function loadObj(str, w){
     return obj;
 } 
 
-export{loadObj};
+function edgeList(elements){
+    let edges = {};
+    function add(a, b){
+        let key = a <= b ? a+' '+b : b+' '+a;
+        edges[key] = a < b ? [a, b] : [b, a];
+    }
+    for(let f of elements){
+        let n = f.length;
+        if(n == 2){
+            add(f[0], f[1]);
+        }else if(n > 2){
+            for(let i = 0; i < n; i++){
+                let a = f[i], b = f[(i+1)%n];
+                add(a, b);
+            }
+        }
+    }
+    return Object.values(edges);
+}
+
+export{loadObj, edgeList};
