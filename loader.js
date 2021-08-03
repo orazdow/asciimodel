@@ -1,4 +1,4 @@
-function loadObj(str, w){
+function loadObj(str, scale){
 
     let obj = {
         vertices: {v:[], vt:[], vn:[]},
@@ -8,7 +8,7 @@ function loadObj(str, w){
             f:{v:[], vt:[], vn:[]}
         }
     };
-
+    if (!scale) scale = 1;    
     let a = str.split('\n');
     for(let s of a){
 
@@ -17,8 +17,9 @@ function loadObj(str, w){
         
         switch(c){
             case 'v':
-                if(w && arr.length == 3) arr.push(1);
-                obj.vertices.v.push(arr.map(f=>+f));
+                arr = arr.map(f=>+f*scale);
+                if(arr.length == 3) arr.push(1);
+                obj.vertices.v.push(arr);
             break;
 
             case 'vt':

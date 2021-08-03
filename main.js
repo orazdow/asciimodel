@@ -3,12 +3,9 @@ import {loadObj, edgeList} from './loader.js';
 import * as g from './render.js';
 const {sin, cos, floor, abs, PI} = Math;
 
-let obj = loadObj(knight, 1);
-console.log(obj.elements.f);
+let obj = loadObj(knight, .088);
 let obj_v = obj.vertices.v;
 let obj_i = obj.elements.f.v;
-obj_v = g.mult_rows(obj.vertices.v, [.088,.088,.088,1]);
-
 obj_i = edgeList(obj_i);
 
 let tri_v = [[-0.75, 0.5, 0, 1],
