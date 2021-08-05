@@ -56,8 +56,7 @@ function loadObj(str, scale){
                 if(vt.length) f.vt.push(vt);
                 if(vn.length) f.vn.push(vn);
         }
-    }
-    
+    }   
     return obj;
 } 
 

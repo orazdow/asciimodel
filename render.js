@@ -1,12 +1,13 @@
 const {sin, cos, floor, abs, PI} = Math;
+const idmat = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]];
 
 // row-order matrix v*T(4x4)
 function mat_mul_4(a, b){
 	// if(a[0].length != b.length) return null;
 	let mat = [];
-	for(var i = 0; i < a.length; i++){
+	for(let i = 0; i < a.length; i++){
 		mat.push([]);
-		for(var j = 0; j < 4/*b[0].length*/; j++){	
+		for(let j = 0; j < 4/*b[0].length*/; j++){	
 			let val = 0;
 			val += a[i][0] * b[0][j];
 			val += a[i][1] * b[1][j];
@@ -19,8 +20,8 @@ function mat_mul_4(a, b){
 }
 
 function mult_rows(mat, arr){
-	for (var i = 0; i < mat.length; i++) {
-		for (var j = 0; j < arr.length; j++) {
+	for(let i = 0; i < mat.length; i++){
+		for(let j = 0; j < arr.length; j++){
 			mat[i][j] *= arr[j];
 		}
 	}
@@ -28,12 +29,32 @@ function mult_rows(mat, arr){
 }
 
 function add_rows(mat, arr){
-	for (var i = 0; i < mat.length; i++) {
-		for (var j = 0; j < arr.length; j++) {
+	for(let i = 0; i < mat.length; i++){
+		for(let j = 0; j < arr.length; j++){
 			mat[i][j] += arr[j];
 		}
 	}
     return mat;
+}
+
+function proc_rows(mat, f){
+	for(let i = 0; i < mat.length; i++){
+		f(mat[i]);
+	}
+}
+
+function transpose(mat){
+    let m = mat.length, n = mat[0].length;
+    let t = [];
+    for(let i = 0; i < n; i++)
+         t.push(Array(m).fill(0)); 
+    
+    for(let i = 0; i < n; i++){
+        for(let j = 0; j < m; j++){
+            t[i][j] = mat[j][i];
+        }
+    }
+    return t;
 }
 
 //check point with determinant
@@ -44,10 +65,7 @@ function inline(px,py,ax,ay,bx,by,e){
 }
 
 function create_rot(tx, ty, tz){
-	let rot = [[1,0,0,0],
-			   [0,1,0,0],
-			   [0,0,1,0],
-			   [0,0,0,1]];
+	let rot = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]];
 
 	let zrot = [[Math.cos(tz), -Math.sin(tz), 0, 0],
 				[Math.sin(tz), Math.cos(tz), 0, 0],
@@ -83,15 +101,20 @@ function create_scene(pre, x, y, vertices, elements, r_mat, t_mat){
 }
 
 function render(s){
-	let e = 0.006;
+	let e = 0.005;
 	let str = '';
 	let x = s.x, y = s.y;
 
 	s.vertices = s.r_mat ? mat_mul_4(s.vertices, s.r_mat) : s.vertices;	
-	let mat = s.t_mat ? mat_mul_4(s.vertices, s.t_mat) : s.vertices;
+	let mat = mat_mul_4(s.vertices, s.t_mat || idmat);
+
+	proc_rows(mat, (r)=>{
+		r[0] /= 2-r[2];
+		r[1] /= 2-r[2];
+	});
 
 	for(let iy = 0; iy < y; iy++){
-		for(let ix = 0; ix < x; ix++ ){
+		for(let ix = 0; ix < x; ix++){
 			let draw = 0;	
 			let _y = (2*iy-y)/x;
 			let _x = (2*ix-x)/x;
@@ -108,7 +131,7 @@ function render(s){
                     }
                 }
             }
-			if(draw){ str += 'g'; }else{ str += '-' };
+			if(draw){ str += 'g'; }else{ str += '_' };
 		}   str += '\n';	
 	}	
 	s.pre.innerHTML = str;
