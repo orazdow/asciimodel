@@ -3,18 +3,26 @@ const idmat = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]];
 
 // row-order matrix v*T(4x4)
 function mat_mul_4(a, b){
-	// if(a[0].length != b.length) return null;
 	let mat = [];
 	for(let i = 0; i < a.length; i++){
-		mat.push([]);
-		for(let j = 0; j < 4/*b[0].length*/; j++){	
-			let val = 0;
-			val += a[i][0] * b[0][j];
-			val += a[i][1] * b[1][j];
-			val += a[i][2] * b[2][j];
-			val += a[i][3] * b[3][j];
-			mat[i].push(val)
-		}		
+		mat.push([
+		a[i][0]*b[0][0] + a[i][1]*b[1][0] + a[i][2]*b[2][0] + a[i][3]*b[3][0],
+		a[i][0]*b[0][1] + a[i][1]*b[1][1] + a[i][2]*b[2][1] + a[i][3]*b[3][1],
+		a[i][0]*b[0][2] + a[i][1]*b[1][2] + a[i][2]*b[2][2] + a[i][3]*b[3][2],
+		a[i][0]*b[0][3] + a[i][1]*b[1][3] + a[i][2]*b[2][3] + a[i][3]*b[3][3]
+		]);
+	}
+	return mat;
+}
+
+function mat_mul_4w(a, b){
+	let mat = [];
+	for(let i = 0; i < a.length; i++){
+		let x = a[i][0]*b[0][0] + a[i][1]*b[1][0] + a[i][2]*b[2][0] + a[i][3]*b[3][0];
+		let y = a[i][0]*b[0][1] + a[i][1]*b[1][1] + a[i][2]*b[2][1] + a[i][3]*b[3][1];
+		let z = a[i][0]*b[0][2] + a[i][1]*b[1][2] + a[i][2]*b[2][2] + a[i][3]*b[3][2];
+		let w = a[i][0]*b[0][3] + a[i][1]*b[1][3] + a[i][2]*b[2][3] + a[i][3]*b[3][3];
+		mat.push([x/w, y/w, z/w, w]);
 	}
 	return mat;
 }
@@ -94,11 +102,20 @@ function create_translate(x, y, z){
 	return [[1,0,0,0],[0,1,0,0],[0,0,1,0],[x, y||x, z||x, 1]];
 }
 
+function create_proj(scale, plane, perpective){
+	return [[scale,0,0,0],[0,scale,0,0],[0,0,scale,-perspective],[0,0,0,plane]];
+}
+
 function create_scene(pre, x, y, vertices, elements, r_mat, t_mat){
 	return arguments.length > 4 ? {
 		pre: pre, x: x, y: y, vertices: vertices, elements: elements, r_mat : r_mat, t_mat: t_mat
 	} : null;
 }
+
+var proj = [[1, 0, 0, 0], 
+            [0, 1, 0, 0], 
+            [0, 0, -1, -.5],
+            [0, 0, 0, 1]];
 
 function render(s){
 	let e = 0.005;
@@ -106,11 +123,12 @@ function render(s){
 	let x = s.x, y = s.y;
 
 	s.vertices = s.r_mat ? mat_mul_4(s.vertices, s.r_mat) : s.vertices;	
-	let mat = mat_mul_4(s.vertices, s.t_mat || idmat);
+	let mat = mat_mul_4(s.vertices, s.t_mat || idmat);	
+	// mat = mat_mul_4w(mat, proj);
 
 	proc_rows(mat, (r)=>{
-		r[0] /= 2-r[2];
-		r[1] /= 2-r[2];
+		r[0] /= 1.2-r[2]*.38;
+		r[1] /= 1.2-r[2]*.38;
 	});
 
 	for(let iy = 0; iy < y; iy++){
@@ -137,4 +155,4 @@ function render(s){
 	s.pre.innerHTML = str;
 }
 
-export{mat_mul_4, mult_rows, add_rows, create_rot, create_scene, create_scale, create_translate, render};
+export{mat_mul_4, mult_rows, add_rows, create_rot, create_scene, create_scale, create_translate, create_proj, render};
